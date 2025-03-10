@@ -1,0 +1,50 @@
+name: Node.js CI with SonarQube
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+  workflow_dispatch:  # Allows manual trigger
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1 # Change to your AWS region
+
+      - name: Authenticate with AWS CodeArtifact
+        run: |
+          export CODEARTIFACT_AUTH_TOKEN=$(aws codeartifact get-authorization-token --domain YOUR_DOMAIN --domain-owner YOUR_AWS_ACCOUNT_ID --query authorizationToken --output text)
+          echo "//YOUR_CODEARTIFACT_REPOSITORY/npm/:_authToken=$CODEARTIFACT_AUTH_TOKEN" > ~/.npmrc
+          echo "Registry Authentication Configured"
+
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Run Tests
+        run: npm test
+
+      #- name: Run SonarQube Analysis
+      #  run: |
+      #    sonar-scanner \
+      #      -Dsonar.projectKey=YOUR_PROJECT_KEY \
+      #      -Dsonar.sources=. \
+      #      -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} \
+      #      -Dsonar.login=${{ secrets.SONAR_TOKEN }}
