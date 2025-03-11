@@ -25,8 +25,8 @@ jobs:
 
       - name: Authenticate with AWS CodeArtifact
         run: |
-          export CODEARTIFACT_AUTH_TOKEN=$(aws codeartifact get-authorization-token --domain YOUR_DOMAIN --domain-owner YOUR_AWS_ACCOUNT_ID --query authorizationToken --output text)
-          echo "//YOUR_CODEARTIFACT_REPOSITORY/npm/:_authToken=$CODEARTIFACT_AUTH_TOKEN" > ~/.npmrc
+          export CODEARTIFACT_AUTH_TOKEN=$(aws codeartifact get-authorization-token --domain demo --domain-owner 494473211790 --query authorizationToken --output text)
+          echo "//node/npm/:_authToken=$CODEARTIFACT_AUTH_TOKEN" > ~/.npmrc
           echo "Registry Authentication Configured"
 
 
