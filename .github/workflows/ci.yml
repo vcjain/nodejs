@@ -26,8 +26,12 @@ jobs:
       - name: Authenticate with AWS CodeArtifact
         run: |
           export CODEARTIFACT_AUTH_TOKEN=$(aws codeartifact get-authorization-token --domain demo --domain-owner 494473211790 --query authorizationToken --output text)
-          echo "//node/npm/:_authToken=$CODEARTIFACT_AUTH_TOKEN" > ~/.npmrc
-          echo "Registry Authentication Configured"
+          
+          aws codeartifact login --tool npm --repository node --domain demo --domain-owner 494473211790 --region us-east-1
+
+          echo "@gwl:registry=https://demo-494473211790.d.codeartifact.us-east-1.amazonaws.com/npm/node/" > ~/.npmrc
+          echo "//demo-494473211790.d.codeartifact.us-east-1.amazonaws.com/npm/node/:_authToken=$CODEARTIFACT_AUTH_TOKEN" >> ~/.npmrc
+          echo "AWS CodeArtifact Authentication Configured"
 
 
       - name: Set up Node.js
